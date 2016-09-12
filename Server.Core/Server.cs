@@ -10,15 +10,13 @@ namespace Server.Core
     {
         private Socket _socket;
         private Socket _clientConnection;
-        private IPathContents _pathContents;
-        private IHttpHandler _httpHandler;
+        private IResponseHandler _httpHandler;
         private static bool keepRunning = true;
         private int _timeout;
 
         public Server Start(ServerInfo serverInfo)
         {
             SetupSocket(serverInfo);
-            _pathContents = serverInfo.PathContents;
             _httpHandler = serverInfo.HttpHandler;
             _timeout = serverInfo.Timeout;
             Console.WriteLine("Server has started at port " + ((IPEndPoint)_socket.LocalEndPoint).Port);

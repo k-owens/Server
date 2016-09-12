@@ -1,6 +1,6 @@
 ﻿namespace Server.Core
 {
-    public interface IHttpHandler
+    public interface IResponseHandler
     {
         Reply Execute(Request request);
     }

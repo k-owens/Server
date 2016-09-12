@@ -3,15 +3,13 @@
     public class ServerInfo
     {
         public int Port { get; }
-        public IPathContents PathContents { get; set; }
-        public IHttpHandler HttpHandler { get; }
+        public IResponseHandler HttpHandler { get; }
         public int Timeout { get; }
 
-        public ServerInfo(int port, IPathContents pathContents, IHttpHandler httpHandler, int timeout)
+        public ServerInfo(int port, IResponseHandler httpHandler, int timeout)
         {
             HttpHandler = httpHandler;
             Port = port;
-            PathContents = pathContents;
             Timeout = timeout;
         }
     }
