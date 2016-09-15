@@ -34,6 +34,14 @@ namespace Server.Core
             return wholeMessage;
         }
 
+        public byte[] CreateGoodReply(string message)
+        {
+            StartingLine = Encoding.UTF8.GetBytes("HTTP/1.1 200 OK\r\n");
+            Body = Encoding.UTF8.GetBytes(message);
+            Headers = Encoding.UTF8.GetBytes("Content-Length: " + Body.Length + "\r\n");
+            return ReplyMessage();
+        }
+
         private static void CombineArrays(byte[] messageBytes, byte[] combinedMessage, byte[] bodyMessage)
         {
             Buffer.BlockCopy(messageBytes, 0, combinedMessage, 0, messageBytes.Length);
