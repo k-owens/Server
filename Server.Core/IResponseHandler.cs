@@ -2,6 +2,6 @@
 {
     public interface IResponseHandler
     {
-        Reply Execute(Request request);
+        Response HandleResponse(Request request);
     }
 }

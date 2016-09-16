@@ -61,13 +61,14 @@ namespace Server.Core
         {
             byte[] clientMessage = Read();
             Request request= new Request(clientMessage);
-            byte[] reply = GetReply(request).ReplyMessage();
-            _clientConnection.Send(reply);
+            var reply = new Reply(GetResponse(request));
+            byte[] messageForClient = reply.MessageForClient();
+            _clientConnection.Send(messageForClient);
         }
 
-        private Reply GetReply(Request request)
+        private Response GetResponse(Request request)
         {
-            return _httpHandler.Execute(request);
+            return _httpHandler.HandleResponse(request);
         }
 
 

@@ -54,7 +54,7 @@ namespace Server.Test
             t2.Start();
             t2.Wait();
             CloseConnectionWithServer(socket, server);
-            Assert.AreEqual("HTTP/1.1 200 OK\r\n\r\n", message);
+            Assert.AreEqual("HTTP/1.1 200 OK\r\n\r\nHello World", message);
         }
 
         private void ConnectClientToServer(Socket socket, IPEndPoint ipEndPoint, Core.Server server)

@@ -3,25 +3,22 @@ using System.Text;
 
 namespace Server.Core
 {
-    public class Reply
+    internal class Reply
     {
-        public byte[] StartingLine { get; set; }
-        public byte[] Headers { get; set; }
-        public byte[] Body { get; set; }
+        private Response _response;
+        private int _bodySize;
 
-        public Reply()
+        public Reply(Response response)
         {
-            StartingLine = new byte[0];
-            Headers = new byte[0];
-            Body = new byte[0];
+            _response = response;
         }
 
-        public byte[] ReplyMessage()
+        public byte[] MessageForClient()
         {
-            var startingLine = StartingLine;
-            var headers = Headers;
+            var startingLine = CreateStartingLine();
+            var headers = CreateHeaders();
             var newLine = Encoding.UTF8.GetBytes("\r\n");
-            var body = Body;
+            var body = GetBodyMessage();
 
             var startAndHeaders = new byte[startingLine.Length + headers.Length];
             CombineArrays(startingLine, startAndHeaders, headers);
@@ -34,12 +31,55 @@ namespace Server.Core
             return wholeMessage;
         }
 
-        public byte[] CreateGoodReply(string message)
+        private byte[] GetBodyMessage()
         {
-            StartingLine = Encoding.UTF8.GetBytes("HTTP/1.1 200 OK\r\n");
-            Body = Encoding.UTF8.GetBytes(message);
-            Headers = Encoding.UTF8.GetBytes("Content-Length: " + Body.Length + "\r\n");
-            return ReplyMessage();
+            if (!(_response.Body == null))
+            {
+                _response.ReadyStreamForRead();
+                var buffer = new byte[(int)_response.Body.Length];
+                _bodySize = _response.Body.Read(buffer, 0, buffer.Length);
+                return buffer;
+            }
+            return new byte[0];
+        }
+
+        private byte[] CreateHeaders()
+        {
+            if (_bodySize != 0)
+            {
+                if (!(_response.ContentType == null))
+                {
+                    return Encoding.UTF8.GetBytes("Content-Type: " + _response.ContentType + "\r\n" + "Content-Length: " + _bodySize + "\r\n");
+                }
+                else
+                {
+                    return Encoding.UTF8.GetBytes("Content-Length: " + _bodySize + "\r\n");
+                }
+            }
+            return new byte[0];
+        }
+
+        private byte[] CreateStartingLine()
+        {
+            switch (_response.StatusCode)
+            {
+                case 0:
+                    return Encoding.UTF8.GetBytes("HTTP/1.1 200 OK\r\n");
+                case 200:
+                    return Encoding.UTF8.GetBytes("HTTP/1.1 200 OK\r\n");
+                case 201:
+                    return Encoding.UTF8.GetBytes("HTTP/1.1 201 Created\r\n");
+                case 400:
+                    return Encoding.UTF8.GetBytes("HTTP/1.1 400 Bad Request\r\n");
+                case 404:
+                    return Encoding.UTF8.GetBytes("HTTP/1.1 404 Not Found\r\n");
+                case 409:
+                    return Encoding.UTF8.GetBytes("HTTP/1.1 409 Conflict\r\n");
+                case 505:
+                    return Encoding.UTF8.GetBytes("HTTP/1.1 505 HTTP Version Not Supported\r\n");
+                default:
+                    return Encoding.UTF8.GetBytes("HTTP/1.1 501 Not Implemented\r\n");
+            }
         }
 
         private static void CombineArrays(byte[] messageBytes, byte[] combinedMessage, byte[] bodyMessage)
