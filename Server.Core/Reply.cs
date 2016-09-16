@@ -15,70 +15,56 @@ namespace Server.Core
 
         public byte[] MessageForClient()
         {
-            var startingLine = CreateStartingLine();
-            var headers = CreateHeaders();
-            var newLine = Encoding.UTF8.GetBytes("\r\n");
+            var topOfMessage = CreateStartingLine() + CreateHeaders() + "\r\n";
             var body = GetBodyMessage();
 
-            var startAndHeaders = new byte[startingLine.Length + headers.Length];
-            CombineArrays(startingLine, startAndHeaders, headers);
-
-            var startHeadersNewLine = new byte[startAndHeaders.Length + newLine.Length];
-            CombineArrays(startAndHeaders, startHeadersNewLine, newLine);
-
-            var wholeMessage = new byte[startHeadersNewLine.Length + body.Length];
-            CombineArrays(startHeadersNewLine, wholeMessage, body);
+            var wholeMessage = new byte[topOfMessage.Length + body.Length];
+            CombineArrays(Encoding.UTF8.GetBytes(topOfMessage), wholeMessage, body);
             return wholeMessage;
         }
 
         private byte[] GetBodyMessage()
         {
-            if (!(_response.Body == null))
+            if (_response.Body == null)
             {
-                _response.ReadyStreamForRead();
-                var buffer = new byte[(int)_response.Body.Length];
-                _bodySize = _response.Body.Read(buffer, 0, buffer.Length);
-                return buffer;
+                return new byte[0];
             }
-            return new byte[0];
+            _response.ReadyStreamForRead();
+            var buffer = new byte[(int)_response.Body.Length];
+            _bodySize = _response.Body.Read(buffer, 0, buffer.Length);
+            return buffer;
         }
 
-        private byte[] CreateHeaders()
+        private string CreateHeaders()
         {
-            if (_bodySize != 0)
-            {
-                if (!(_response.ContentType == null))
-                {
-                    return Encoding.UTF8.GetBytes("Content-Type: " + _response.ContentType + "\r\n" + "Content-Length: " + _bodySize + "\r\n");
-                }
-                else
-                {
-                    return Encoding.UTF8.GetBytes("Content-Length: " + _bodySize + "\r\n");
-                }
-            }
-            return new byte[0];
+            if (_bodySize == 0)
+                return "";
+            if (_response.ContentType == null)
+                return "Content-Length: " + _bodySize + "\r\n";            
+            else
+                return "Content-Type: " + _response.ContentType + "\r\n" + "Content-Length: " + _bodySize + "\r\n";
         }
 
-        private byte[] CreateStartingLine()
+        private string CreateStartingLine()
         {
             switch (_response.StatusCode)
             {
                 case 0:
-                    return Encoding.UTF8.GetBytes("HTTP/1.1 200 OK\r\n");
+                    return "HTTP/1.1 200 OK\r\n";
                 case 200:
-                    return Encoding.UTF8.GetBytes("HTTP/1.1 200 OK\r\n");
+                    return "HTTP/1.1 200 OK\r\n";
                 case 201:
-                    return Encoding.UTF8.GetBytes("HTTP/1.1 201 Created\r\n");
+                    return "HTTP/1.1 201 Created\r\n";
                 case 400:
-                    return Encoding.UTF8.GetBytes("HTTP/1.1 400 Bad Request\r\n");
+                    return "HTTP/1.1 400 Bad Request\r\n";
                 case 404:
-                    return Encoding.UTF8.GetBytes("HTTP/1.1 404 Not Found\r\n");
+                    return "HTTP/1.1 404 Not Found\r\n";
                 case 409:
-                    return Encoding.UTF8.GetBytes("HTTP/1.1 409 Conflict\r\n");
+                    return "HTTP/1.1 409 Conflict\r\n";
                 case 505:
-                    return Encoding.UTF8.GetBytes("HTTP/1.1 505 HTTP Version Not Supported\r\n");
+                    return "HTTP/1.1 505 HTTP Version Not Supported\r\n";
                 default:
-                    return Encoding.UTF8.GetBytes("HTTP/1.1 501 Not Implemented\r\n");
+                    return "HTTP/1.1 501 Not Implemented\r\n";
             }
         }
 

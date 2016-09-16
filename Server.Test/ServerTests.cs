@@ -19,7 +19,7 @@ namespace Server.Test
         public void ServerCanStart()
         {
             var server = new Core.Server();
-            IResponseHandler requestRouter = new TestResponse();
+            IRequestHandler requestRouter = new TestResponse();
             ServerInfo info = new ServerInfo(8080, requestRouter, 0);
             Assert.IsTrue(server.Start(info) != null);
             server.Stop();
@@ -29,7 +29,7 @@ namespace Server.Test
         public void ServerCanStop()
         {
             var server = new Core.Server();
-            IResponseHandler requestRouter = new TestResponse();
+            IRequestHandler requestRouter = new TestResponse();
             ServerInfo info = new ServerInfo(8080, requestRouter, 0);
             server.Start(info);
             Assert.IsTrue(server.Stop());
@@ -59,7 +59,7 @@ namespace Server.Test
 
         private void ConnectClientToServer(Socket socket, IPEndPoint ipEndPoint, Core.Server server)
         {
-            IResponseHandler requestRouter = new TestResponse();
+            IRequestHandler requestRouter = new TestResponse();
             ServerInfo info = new ServerInfo(8080, requestRouter, 0);
             server.Start(info);
             socket.Connect(ipEndPoint);

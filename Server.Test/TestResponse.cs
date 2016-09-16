@@ -4,9 +4,9 @@ using System.Text;
 
 namespace Server.Test
 {
-    public class TestResponse : IResponseHandler
+    public class TestResponse : IRequestHandler
     {
-        public Response HandleResponse(Request request)
+        public Response HandleRequest(Request request)
         {
             Response response = new Response();
             response.StatusCode = 200;

@@ -10,7 +10,7 @@ namespace Server.Core
     {
         private Socket _socket;
         private Socket _clientConnection;
-        private IResponseHandler _httpHandler;
+        private IRequestHandler _httpHandler;
         private static bool keepRunning = true;
         private int _timeout;
 
@@ -68,7 +68,7 @@ namespace Server.Core
 
         private Response GetResponse(Request request)
         {
-            return _httpHandler.HandleResponse(request);
+            return _httpHandler.HandleRequest(request);
         }
 
 
