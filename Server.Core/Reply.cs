@@ -15,8 +15,8 @@ namespace Server.Core
 
         public byte[] MessageForClient()
         {
-            var topOfMessage = CreateStartingLine() + CreateHeaders() + "\r\n";
             var body = GetBodyMessage();
+            var topOfMessage = CreateStartingLine() + CreateHeaders() + "\r\n";
 
             var wholeMessage = new byte[topOfMessage.Length + body.Length];
             CombineArrays(Encoding.UTF8.GetBytes(topOfMessage), wholeMessage, body);
