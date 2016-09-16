@@ -3,35 +3,69 @@ using System.Text;
 
 namespace Server.Core
 {
-    public class Reply
+    internal class Reply
     {
-        public byte[] StartingLine { get; set; }
-        public byte[] Headers { get; set; }
-        public byte[] Body { get; set; }
+        private Response _response;
+        private int _bodySize;
 
-        public Reply()
+        public Reply(Response response)
         {
-            StartingLine = new byte[0];
-            Headers = new byte[0];
-            Body = new byte[0];
+            _response = response;
         }
 
-        public byte[] ReplyMessage()
+        public byte[] MessageForClient()
         {
-            var startingLine = StartingLine;
-            var headers = Headers;
-            var newLine = Encoding.UTF8.GetBytes("\r\n");
-            var body = Body;
+            var topOfMessage = CreateStartingLine() + CreateHeaders() + "\r\n";
+            var body = GetBodyMessage();
 
-            var startAndHeaders = new byte[startingLine.Length + headers.Length];
-            CombineArrays(startingLine, startAndHeaders, headers);
-
-            var startHeadersNewLine = new byte[startAndHeaders.Length + newLine.Length];
-            CombineArrays(startAndHeaders, startHeadersNewLine, newLine);
-
-            var wholeMessage = new byte[startHeadersNewLine.Length + body.Length];
-            CombineArrays(startHeadersNewLine, wholeMessage, body);
+            var wholeMessage = new byte[topOfMessage.Length + body.Length];
+            CombineArrays(Encoding.UTF8.GetBytes(topOfMessage), wholeMessage, body);
             return wholeMessage;
+        }
+
+        private byte[] GetBodyMessage()
+        {
+            if (_response.Body == null)
+            {
+                return new byte[0];
+            }
+            _response.ReadyStreamForRead();
+            var buffer = new byte[(int)_response.Body.Length];
+            _bodySize = _response.Body.Read(buffer, 0, buffer.Length);
+            return buffer;
+        }
+
+        private string CreateHeaders()
+        {
+            if (_bodySize == 0)
+                return "";
+            if (_response.ContentType == null)
+                return "Content-Length: " + _bodySize + "\r\n";            
+            else
+                return "Content-Type: " + _response.ContentType + "\r\n" + "Content-Length: " + _bodySize + "\r\n";
+        }
+
+        private string CreateStartingLine()
+        {
+            switch (_response.StatusCode)
+            {
+                case 0:
+                    return "HTTP/1.1 200 OK\r\n";
+                case 200:
+                    return "HTTP/1.1 200 OK\r\n";
+                case 201:
+                    return "HTTP/1.1 201 Created\r\n";
+                case 400:
+                    return "HTTP/1.1 400 Bad Request\r\n";
+                case 404:
+                    return "HTTP/1.1 404 Not Found\r\n";
+                case 409:
+                    return "HTTP/1.1 409 Conflict\r\n";
+                case 505:
+                    return "HTTP/1.1 505 HTTP Version Not Supported\r\n";
+                default:
+                    return "HTTP/1.1 501 Not Implemented\r\n";
+            }
         }
 
         private static void CombineArrays(byte[] messageBytes, byte[] combinedMessage, byte[] bodyMessage)
