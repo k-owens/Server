@@ -13,6 +13,7 @@ namespace Server.Test
             var message = Encoding.UTF8.GetBytes("Hello World");
             response.Body = new MemoryStream();
             response.Body.Write(message, 0, message.Length);
+            response.ContentType = "text/plain";
             return response;
         }
     }
