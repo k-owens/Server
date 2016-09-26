@@ -8,6 +8,12 @@ namespace Server.Core
         public string ContentType { get; set; }
         public MemoryStream Body { get; set; }
 
+        public void SetBody(byte[] bodyMessage)
+        {
+            Body = new MemoryStream();
+            Body.Write(bodyMessage, 0, bodyMessage.Length);
+        }
+
         internal void ReadyStreamForRead()
         {
             Body.Flush();
