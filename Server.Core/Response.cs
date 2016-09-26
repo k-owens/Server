@@ -6,7 +6,7 @@ namespace Server.Core
     {
         public int StatusCode { get; set; }
         public string ContentType { get; set; }
-        public MemoryStream Body { get; set; }
+        public Stream Body { get; set; }
 
         public void SetBody(byte[] bodyMessage)
         {
