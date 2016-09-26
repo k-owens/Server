@@ -60,7 +60,9 @@ namespace Server.Core
         private void RespondToClient()
         {
             byte[] clientMessage = Read();
-            Request request= new Request(clientMessage);
+            Console.WriteLine(Encoding.UTF8.GetString(clientMessage));
+            RequestBuilder requestbuilder = new RequestBuilder();
+            Request request = requestbuilder.BuildRequestFromWholeMessage(clientMessage);
             var reply = new Reply(GetResponse(request));
             byte[] messageForClient = reply.MessageForClient();
             _clientConnection.Send(messageForClient);
