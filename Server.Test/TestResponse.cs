@@ -8,13 +8,13 @@ namespace Server.Test
     {
         public Response HandleRequest(Request request)
         {
-            Response response = new Response();
-            response.StatusCode = 200;
+            ResponseBuilder responseBuilder = new ResponseBuilder();
+            responseBuilder.SetStatusCode(200);
             var message = Encoding.UTF8.GetBytes("Hello World");
-            response.Body = new MemoryStream();
-            response.Body.Write(message, 0, message.Length);
-            response.ContentType = "text/plain";
-            return response;
+            responseBuilder.SetBody(new MemoryStream());
+            responseBuilder.GetBodyStream().Write(message, 0, message.Length);
+            responseBuilder.SetContentType("text/plain");
+            return responseBuilder.BuildResponse();
         }
     }
 }
