@@ -1,16 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 
 namespace Server
 {
-    public class NetworkClientRequestBuilder
+    public class RequestParser
     {
         private Request request;
 
-        public NetworkClientRequestBuilder()
+        public RequestParser()
         {
             request = new Request();
         }
@@ -30,7 +28,7 @@ namespace Server
 
         private void SetRequestToNoValues()
         {
-            request.Method = "";
+            request.Method = HttpMethod.Get;
             request.Uri = "";
             request.HttpVersion = "";
             request.Body = new byte[0];
@@ -58,9 +56,36 @@ namespace Server
         private void ParseStartingLine(string firstLine)
         {
             var requestLine = firstLine.Split(' ', ' ');
-            request.Method = requestLine[0];
+            request.Method = ConvertStringToHttpMethod(requestLine[0]);
             request.Uri = requestLine[1];
             request.HttpVersion = requestLine[2];
+        }
+
+        private HttpMethod ConvertStringToHttpMethod(string method)
+        {
+            switch (method)
+            {
+                case "GET":
+                    return HttpMethod.Get;
+
+                case "OPTIONS":
+                    return HttpMethod.Options;
+
+                case "POST":
+                    return HttpMethod.Post;
+
+                case "PUT":
+                    return HttpMethod.Put;
+
+                case "DELETE":
+                    return HttpMethod.Delete;
+
+                case "HEAD":
+                    return HttpMethod.Head;
+
+                default:
+                    throw new Exception("No mapping implemented for http method.");
+            }
         }
 
         private List<string> DivideHeaders(string[] allLines)

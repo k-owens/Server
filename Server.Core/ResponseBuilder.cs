@@ -11,20 +11,22 @@ namespace Server.Core
             _response = new Response();
         }
 
-        public Response BuildResponse()
+        public Response Build()
         {
             return _response;
         }
 
-        public void SetBody(byte[] bodyMessage)
+        public ResponseBuilder SetBody(byte[] bodyMessage)
         {
             _response.Body = new MemoryStream();
             _response.Body.Write(bodyMessage, 0, bodyMessage.Length);
+            return this;
         }
 
-        public void SetBody(Stream bodyStream)
+        public ResponseBuilder SetBody(Stream bodyStream)
         {
             _response.Body = bodyStream;
+            return this;
         }
 
         public Stream GetBodyStream()
@@ -32,14 +34,16 @@ namespace Server.Core
             return _response.Body;
         }
 
-        public void SetStatusCode(int statusCode)
+        public ResponseBuilder SetStatusCode(int statusCode)
         {
             _response.StatusCode = statusCode;
+            return this;
         }
 
-        public void SetContentType(string contentType)
+        public ResponseBuilder SetContentType(string contentType)
         {
             _response.ContentType = contentType;
+            return this;
         }
     }
 }

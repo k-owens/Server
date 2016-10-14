@@ -6,7 +6,7 @@ namespace Server
     {
         public string HttpVersion { get; internal set; }
         public string Uri { get; internal set; }
-        public string Method { get; internal set; }
+        public HttpMethod Method { get; internal set; }
         public List<string> Headers { get; internal set; }
         public byte[] Body { get; internal set; }
 
@@ -14,7 +14,7 @@ namespace Server
         {
             HttpVersion = "HTTP/1.1";
             Uri = "/";
-            Method = "GET";
+            Method = HttpMethod.Get;
             Headers = new List<string>();
             Body = new byte[0];
         }

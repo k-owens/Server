@@ -13,39 +13,45 @@ namespace Server.Core
             request = new Request();
         }
 
-        public Request BuildRequest()
+        public Request Build()
         {
             return request;
         }
 
-        public void SetHttpVersion(string httpVersion)
+        public RequestBuilder SetHttpVersion(string httpVersion)
         {
             request.HttpVersion = httpVersion;
+            return this;
         }
 
-        public void SetUri(string uri)
+        public RequestBuilder SetUri(string uri)
         {
             request.Uri = uri;
+            return this;
         }
 
-        public void SetMethod(string method)
+        public RequestBuilder SetMethod(HttpMethod method)
         {
             request.Method = method;
+            return this;
         }
 
-        public void AddHeader(string header)
+        public RequestBuilder AddHeader(string header)
         {
             request.Headers.Add(header);
+            return this;
         }
 
-        public void SetBody(byte[] body)
+        public RequestBuilder SetBody(byte[] body)
         {
             request.Body = body;
+            return this;
         }
 
-        public void SetBody(string bodyMessage)
+        public RequestBuilder SetBody(string bodyMessage)
         {
             request.Body = Encoding.UTF8.GetBytes(bodyMessage);
+            return this;
         }
     }
 }
