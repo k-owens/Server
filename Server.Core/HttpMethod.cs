@@ -1,4 +1,4 @@
-﻿namespace Server
+﻿namespace Server.Core
 {
     public enum HttpMethod
     {

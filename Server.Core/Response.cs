@@ -13,12 +13,6 @@ namespace Server.Core
 
         private int _bodySize;
 
-        //public Response()
-        //{
-        //    StatusCode = 200;
-        //    ContentType = "";
-        //}
-
         public Response(int statusCode, string contentType, Stream body)
         {
             StatusCode = statusCode;
