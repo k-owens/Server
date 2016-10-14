@@ -14,7 +14,7 @@ namespace Server.Test
             responseBuilder.SetBody(new MemoryStream());
             responseBuilder.GetBodyStream().Write(message, 0, message.Length);
             responseBuilder.SetContentType("text/plain");
-            return responseBuilder.BuildResponse();
+            return responseBuilder.Build();
         }
     }
 }

@@ -1,51 +1,64 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Text;
 
 namespace Server.Core
 {
     public class RequestBuilder
     {
-        private Request request;
+        private string _httpVersion;
+        private string _uri;
+        private HttpMethod _method;
+        private List<string> _headers;
+        private byte[] _body;
 
         public RequestBuilder()
         {
-            request = new Request();
+            _httpVersion = "HHTP/1.1";
+            _uri = "/";
+            _method = HttpMethod.Get;
+            _headers = new List<string>();
+            _body = new byte[0];
         }
 
-        public Request BuildRequest()
+        public Request Build()
         {
-            return request;
+            return new Request(_httpVersion, _uri, _method, _headers, _body);
         }
 
-        public void SetHttpVersion(string httpVersion)
+        public RequestBuilder SetHttpVersion(string httpVersion)
         {
-            request.HttpVersion = httpVersion;
+            _httpVersion = httpVersion;
+            return this;
         }
 
-        public void SetUri(string uri)
+        public RequestBuilder SetUri(string uri)
         {
-            request.Uri = uri;
+            _uri = uri;
+            return this;
         }
 
-        public void SetMethod(string method)
+        public RequestBuilder SetMethod(HttpMethod method)
         {
-            request.Method = method;
+            _method = method;
+            return this;
         }
 
-        public void AddHeader(string header)
+        public RequestBuilder AddHeader(string header)
         {
-            request.Headers.Add(header);
+            _headers.Add(header);
+            return this;
         }
 
-        public void SetBody(byte[] body)
+        public RequestBuilder SetBody(byte[] body)
         {
-            request.Body = body;
+            _body = body;
+            return this;
         }
 
-        public void SetBody(string bodyMessage)
+        public RequestBuilder SetBody(string bodyMessage)
         {
-            request.Body = Encoding.UTF8.GetBytes(bodyMessage);
+            _body = Encoding.UTF8.GetBytes(bodyMessage);
+            return this;
         }
     }
 }
