@@ -1,21 +1,36 @@
 ﻿using System;
 using System.IO;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace Server.Core
 {
     public  class Response
     {
-        public int StatusCode { get; internal set; }
-        public string ContentType { get; internal set; }
-        public Stream Body { get; internal set; }
+        public int StatusCode { get; private set; }
+        public string ContentType { get; private set; }
+        public Stream Body { get; private set; }
 
         private int _bodySize;
 
-        public Response()
+        //public Response()
+        //{
+        //    StatusCode = 200;
+        //    ContentType = "";
+        //}
+
+        public Response(int statusCode, string contentType, Stream body)
         {
-            StatusCode = 200;
-            ContentType = "";
+            StatusCode = statusCode;
+            ContentType = contentType;
+            Body = body;
+        }
+
+        public Task<string> GetBodyAsStringAsync()
+        {
+            Body.Position = 0;
+            var streamReader = new StreamReader(Body ?? new MemoryStream());
+            return streamReader.ReadToEndAsync();
         }
 
         internal byte[] MessageForClient()

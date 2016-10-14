@@ -4,45 +4,48 @@ namespace Server.Core
 {
     public class ResponseBuilder
     {
-        private Response _response;
+        private int _statusCode;
+        private string _contentType;
+        private Stream _body;
 
         public ResponseBuilder()
         {
-            _response = new Response();
+            _statusCode = 200;
+            _contentType = "";
         }
 
         public Response Build()
         {
-            return _response;
+            return new Response(_statusCode, _contentType, _body);
         }
 
         public ResponseBuilder SetBody(byte[] bodyMessage)
         {
-            _response.Body = new MemoryStream();
-            _response.Body.Write(bodyMessage, 0, bodyMessage.Length);
+            _body = new MemoryStream();
+            _body.Write(bodyMessage, 0, bodyMessage.Length);
             return this;
         }
 
         public ResponseBuilder SetBody(Stream bodyStream)
         {
-            _response.Body = bodyStream;
+            _body = bodyStream;
             return this;
         }
 
         public Stream GetBodyStream()
         {
-            return _response.Body;
+            return _body;
         }
 
         public ResponseBuilder SetStatusCode(int statusCode)
         {
-            _response.StatusCode = statusCode;
+            _statusCode = statusCode;
             return this;
         }
 
         public ResponseBuilder SetContentType(string contentType)
         {
-            _response.ContentType = contentType;
+            _contentType = contentType;
             return this;
         }
     }

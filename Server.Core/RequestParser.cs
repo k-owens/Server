@@ -2,15 +2,15 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace Server
+namespace Server.Core
 {
     public class RequestParser
     {
-        private Request request;
+        private RequestBuilder requestBuilder;
 
         public RequestParser()
         {
-            request = new Request();
+            requestBuilder = new RequestBuilder();
         }
 
         public Request BuildRequestFromClientData(byte[] requestMessage)
@@ -23,42 +23,50 @@ namespace Server
             {
                 ParseMessageBytes(requestMessage);
             }
-            return request;
+            return requestBuilder.Build();
         }
 
         private void SetRequestToNoValues()
         {
-            request.Method = HttpMethod.Get;
-            request.Uri = "";
-            request.HttpVersion = "";
-            request.Body = new byte[0];
-            request.Headers = new List<string>();
+            requestBuilder.SetMethod(HttpMethod.Get);
+            requestBuilder.SetUri("");
+            requestBuilder.SetHttpVersion("");
+            requestBuilder.SetBody(new byte[0]);
         }
 
         private void ParseMessageBytes(byte[] requestMessage)
         {
             string[] messageLines = Encoding.UTF8.GetString(requestMessage).Split('\n');
             var firstLine = messageLines[0].Substring(0, messageLines[0].Length - 1);
-            request.Headers = DivideHeaders(messageLines);
+            ParseHeaders(messageLines);
             ParseStartingLine(firstLine);
             ParseMessageBody(requestMessage);
+        }
+
+        private void ParseHeaders(string[] messageLines)
+        {
+            var headersList = DivideHeaders(messageLines);
+            foreach (var header in headersList)
+            {
+                requestBuilder.AddHeader(header);
+            }
         }
 
         private void ParseMessageBody(byte[] requestMessage)
         {
             var index = Encoding.UTF8.GetString(requestMessage).IndexOf("\r\n\r\n");
             if (index == -1)
-                request.Body = new byte[0];
+                requestBuilder.SetBody(new byte[0]);
             else
-                request.Body = BodyOfMessageFromClientData(index + 4, requestMessage);
+                requestBuilder.SetBody(BodyOfMessageFromClientData(index + 4, requestMessage));
         }
 
         private void ParseStartingLine(string firstLine)
         {
             var requestLine = firstLine.Split(' ', ' ');
-            request.Method = ConvertStringToHttpMethod(requestLine[0]);
-            request.Uri = requestLine[1];
-            request.HttpVersion = requestLine[2];
+            requestBuilder.SetMethod(ConvertStringToHttpMethod(requestLine[0]));
+            requestBuilder.SetUri(requestLine[1]);
+            requestBuilder.SetHttpVersion(requestLine[2]);
         }
 
         private HttpMethod ConvertStringToHttpMethod(string method)
