@@ -49,6 +49,8 @@
     <Compile Include="Request.cs" />
     <Compile Include="RequestBuilder.cs" />
     <Compile Include="ResponseBuilder.cs" />
+    <Compile Include="Router.cs" />
+    <Compile Include="RoutingInfo.cs" />
     <Compile Include="Server.cs" />
     <Compile Include="ServerInfo.cs" />
   </ItemGroup>
